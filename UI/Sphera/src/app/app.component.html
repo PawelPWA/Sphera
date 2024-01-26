@@ -1,0 +1,86 @@
+<div class="container">
+
+
+  <form [formGroup]="filterForm" class="row g-3">
+    <div class="col-auto">
+      <label class="col-form-label">Maximum Total </label>
+    </div>
+    <div class="col-auto">
+      <input type="text" formControlName="maximumTotal" class="form-control" />
+      @if(filterForm.controls.maximumTotal.invalid)
+      {
+      <div id="passwordHelpBlock" class="form-text text-danger">
+        Only digits or empty
+      </div>
+      }
+    </div>
+    <div class="col-auto">
+      <button (click)="getData()" [disabled]="filterForm.controls.maximumTotal.invalid" class="btn btn-primary">
+        Get Data
+      </button>
+    </div>
+  </form>
+
+  @if(salesOrderYears !== null)
+  {
+  <div>
+    <table class="table">
+      <thead>
+        <th></th>
+        <th>Order Year</th>
+        <th>Time To Ship In Days</th>
+        <th>Order Total</th>
+      </thead>
+      <tbody>
+        @for(item of salesOrderYears; track item.year)
+        {
+        <tr [ngClass]="{'table-danger': item.timeToShipInDays > maxTimeToShipInDays}">
+          <td><button (click)="getDetails(item.year)" class="btn btn-light">></button></td>
+          <td>{{item.year}}</td>
+          <td>{{item.timeToShipInDays | number:'1.0-5'}}</td>
+          <td>{{item.total | currency:'GBP'}}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+  @else if(isOrdersLoading){
+  <div class="d-flex justify-content-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  }
+
+  @if(orderDetails !== null)
+  {
+  <div class="row">
+    <div class="col">Order Date</div>
+    <div class="col">Ship Date</div>
+    <div class="col">Sales Order ID</div>
+    <div class="col">ContactName</div>
+    <div class="col">Total</div>
+    <div class="col"></div>
+  </div>
+  <cdk-virtual-scroll-viewport itemSize="30" class="virtual-scroll-viewport">
+    <div *cdkVirtualFor="let item of orderDetails; let i = index" class="row">
+      <div class="col"> {{ item.orderDate | date:'dd/MM/yyyy'}}</div>
+      <div class="col"> {{ item.shipDate | date:'dd/MM/yyyy'}}</div>
+      <div class="col"> {{ item.salesOrderId }}</div>
+      <div class="col"> {{ item.firstName }} {{ item.lastName }}</div>
+      <div class="col"> {{ item.total | currency:'GBP' }}</div>
+      <div class="col"><button (click)="searchInNewTab(item.firstName, item.lastName)" class="btn btn-light">></button>
+      </div>
+
+    </div>
+  </cdk-virtual-scroll-viewport>
+  }
+  @else if(isDetailsLoading){
+  <div class="d-flex justify-content-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  }
+</div>
